@@ -1,12 +1,13 @@
 package com.albastomi.arif.Apihelper;
 
+import com.albastomi.arif.Model.ActivityData;
+import com.albastomi.arif.Model.ActivityResult;
 import com.albastomi.arif.Model.LoginResult;
 import com.albastomi.arif.Model.LoginData;
 import com.albastomi.arif.Model.ProjectData;
 import com.albastomi.arif.Model.ProjectResult;
 import com.albastomi.arif.Model.SensorData;
 import com.albastomi.arif.Model.SensorResult;
-
 import retrofit2.Call;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
@@ -26,4 +27,7 @@ public interface UserService {
 
     @POST("v1/sensor/setdata")
     Call<SensorResult> getStringScalar(@Body SensorData body);
+
+    @POST("v1/sensor/setresult")
+    Call<ActivityResult> getStringScalar(@Body ActivityData body);
 }

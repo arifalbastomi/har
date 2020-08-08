@@ -7,6 +7,7 @@ public class ProjectResult {
     private Integer id_project;
     private Integer insert_interval;
     private Integer sync_interval;
+    private Integer attempt;
 
 
 
@@ -94,6 +95,23 @@ public class ProjectResult {
      */
     public void setSync_interval(Integer sync_interval) {
         this.sync_interval = sync_interval;
+    }
+
+
+    /**
+     *
+     * @return
+     * The email
+     */
+    public Integer getAttempt() {return attempt; }
+
+    /**
+     *
+     * @param attempt
+     * The message
+     */
+    public void setAttempt(Integer attempt) {
+        this.sync_interval = attempt;
     }
 
 

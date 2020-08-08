@@ -25,33 +25,25 @@
             android:orientation="vertical"
             android:paddingTop="30dp">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Isi Kode Porject:"
-            android:id="@+id/title"
-            />
-
-        <EditText
-            android:id="@+id/edt_project"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
-            android:layout_marginBottom="10dp"
-            android:layout_marginTop="10dp"
-            android:ems="10"
-            android:inputType="textPersonName"
-            android:hint="Kode Project" />
-
+            <EditText
+                android:id="@+id/edt_activity"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="10dp"
+                android:layout_marginTop="10dp"
+                android:ems="10"
+                android:inputType="textPersonName"
+                android:hint="Activity " />
 
             <Button
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="22dp"
                 android:background="#d67601"
-                android:text="Start"
-                android:id="@+id/btn_mulai"
+                android:text="Save"
+                android:id="@+id/btn_save"
                 android:textAllCaps="false"
                 android:textColor="#fff"
                 android:textSize="18sp" />

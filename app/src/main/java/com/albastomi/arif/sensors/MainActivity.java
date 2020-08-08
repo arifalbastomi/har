@@ -1,61 +1,42 @@
 package com.albastomi.arif.sensors;
 
-import android.content.Context;
-import android.database.sqlite.SQLiteDatabase;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
-import android.os.Handler;
+import com.albastomi.arif.Service.ForegroundService;
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.hardware.Sensor;
 import android.view.View;
-import android.widget.TextView;
 import android.widget.Button;
 import com.albastomi.arif.Utils.SetSharedPreference;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.content.LocalBroadcastManager;
+import android.content.IntentFilter;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.graphics.Color;
+import android.widget.TextView;
+import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
 
-public class MainActivity extends AppCompatActivity  implements SensorEventListener{
+import java.util.ArrayList;
+import java.util.List;
 
-    Sensor accelerometer,gyroscope,hr;
-    SensorManager sm;
-    TextView acceleration,gyro,hrtext;
-    String SQLiteQuery,syncInterval,insertInterval,kodeProject,email,idUser,nama,gyro_x="",gyro_y="",gyro_z="",acc_x="",acc_y="",acc_z="",hrv="";
-    SQLiteDatabase sqLiteDatabase;
+public class MainActivity extends AppCompatActivity {
+
+    String syncInterval,insertInterval,kodeProject,email,idUser,nama,gyro_x,gyro_y,gyro_z,acc_x,acc_y,acc_z,hrv;
     SetSharedPreference fSetSharedPreference;
-    Handler vHandler;
     Button btn_stop;
-
-    Runnable vRunable=new Runnable() {
-        @Override
-        public void run() {
-            insert_data();
-            setTimer();
-        }
-    };
-
-    private void setTimer(){
-        if(vHandler==null){
-            vHandler=new Handler();
-        }
-        stopTimer();
-        vHandler.postDelayed(vRunable,Integer.parseInt(insertInterval));
-    }
-
-    private void stopTimer(){
-        try {
-            vHandler.removeCallbacks(vRunable);
-        }catch (Exception e){
-
-        }
-
-    }
-
+    TextView txt_gyro_x,txt_gyro_y,txt_gyro_z,txt_acc_x,txt_acc_y,txt_acc_z,txt_hrv;
+    List<Entry> lineEntries = new ArrayList<Entry>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        fSetSharedPreference=new SetSharedPreference(this);
+        fSetSharedPreference=new SetSharedPreference(this,true);
 
         syncInterval=fSetSharedPreference.getSyncInterval();
         insertInterval=fSetSharedPreference.getInsertInterval();
@@ -63,91 +44,103 @@ public class MainActivity extends AppCompatActivity  implements SensorEventListe
         email=fSetSharedPreference.getemailLogin();
         idUser=fSetSharedPreference.getidUser();
         nama=fSetSharedPreference.getnamaLogin();
-
-        sqLiteDatabase = openOrCreateDatabase("HAR", Context.MODE_PRIVATE, null);
-
-        sm = (SensorManager) getSystemService(SENSOR_SERVICE);
-
-        accelerometer= sm.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-        acceleration=(TextView) findViewById(R.id.acceleration);
         btn_stop=(Button)findViewById(R.id.btn_stop);
-        if(accelerometer != null){
-            sm.registerListener(this,accelerometer,SensorManager.SENSOR_DELAY_NORMAL);
-
-        }else{
-            acceleration.setText("device tidak support accelerometer");
-        }
-
-        gyroscope= sm.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
-        gyro=(TextView) findViewById(R.id.gyro);
-        if(gyroscope != null){
-            sm.registerListener(this,gyroscope,SensorManager.SENSOR_DELAY_NORMAL);
-
-        }else{
-            gyro.setText("device tidak support gyroscope");
-        }
-
-        hr= sm.getDefaultSensor(Sensor.TYPE_HEART_RATE);
-        hrtext=(TextView) findViewById(R.id.hr);
-        if(hr != null){
-            sm.registerListener(this,hr,SensorManager.SENSOR_DELAY_NORMAL);
-
-        }else{
-            hrtext.setText("device tidak support heart rate");
-        }
-
-        if(accelerometer != null || gyroscope != null || hr != null){
-            setTimer();
-        }
+        startService();
+        drawLineChart();
+        LocalBroadcastManager.getInstance(this)
+                .registerReceiver(mTaskListener, new IntentFilter("backgroundProcessCallBack"));
 
         btn_stop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                stopTimer();
+
+                stopService();
+                Intent activitystartIntent = new Intent(getApplicationContext(), ResultActivity.class);
+                startActivity(activitystartIntent);
+
             }
         });
 
+    }
+
+
+    private BroadcastReceiver mTaskListener = new BroadcastReceiver() {
+
+        @Override
+        public void onReceive(Context cxt, Intent intent) {
+
+         gyro_x=  intent.getStringExtra("gyro_x");
+         gyro_y=  intent.getStringExtra("gyro_y");
+         gyro_z=  intent.getStringExtra("gyro_z");
+         acc_x=  intent.getStringExtra("acc_x");
+         acc_y=  intent.getStringExtra("acc_y");
+         acc_z=  intent.getStringExtra("acc_z");
+         hrv=  intent.getStringExtra("hrv");
+
+        }
+    };
+
+    public void startService() {
+
+        Intent serviceIntent = new Intent(this, ForegroundService.class);
+        serviceIntent.putExtra("inputExtra", "Foreground Service.....");
+        ContextCompat.startForegroundService(this, serviceIntent);
 
     }
 
-    @Override
-    public void onSensorChanged(SensorEvent event) {
+    public void stopService() {
 
-            if (event.sensor == accelerometer){
-
-                acc_x=event.values[0]+"";
-                acc_y=event.values[1]+"";
-                acc_z=event.values[2]+"";
-                acceleration.setText("\nX acc:"+event.values[0]+
-                        "\nY acc:"+event.values[1]+
-                        "\nZ acc:"+event.values[2]);
-
-            }else if(event.sensor == gyroscope){
-
-                gyro_x=event.values[0]+"";
-                gyro_y=event.values[1]+"";
-                gyro_z=event.values[2]+"";
-                gyro.setText("\nX acc:"+event.values[0]+
-                        "\nY acc:"+event.values[1]+
-                        "\nZ acc:"+event.values[2]);
-
-            }else if(event.sensor == hr){
-                hrv=event.values[0]+"";
-                hrtext.setText("\nHeart Rate:"+event.values[0]);
-            }
+        Intent serviceIntent = new Intent(this, ForegroundService.class);
+        stopService(serviceIntent);
 
     }
 
-    @Override
-    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+    private void drawLineChart() {
+
+        LineChart lineChart = findViewById(R.id.lineChart);
+        List<Entry> lineEntries = getDataSet();
+        LineDataSet lineDataSet = new LineDataSet(lineEntries, getString(R.string.gyro_x));
+        lineDataSet.setAxisDependency(YAxis.AxisDependency.LEFT);
+        lineDataSet.setHighlightEnabled(true);
+        lineDataSet.setLineWidth(2);
+        lineDataSet.setColor(Color.RED);
+        lineDataSet.setCircleColor(Color.YELLOW);
+        lineDataSet.setCircleRadius(6);
+        lineDataSet.setCircleHoleRadius(3);
+        lineDataSet.setDrawHighlightIndicators(true);
+        lineDataSet.setHighLightColor(Color.RED);
+        lineDataSet.setValueTextSize(12);
+        lineDataSet.setValueTextColor(Color.DKGRAY);
+
+        LineData lineData = new LineData(lineDataSet);
+        lineChart.getDescription().setText(getString(R.string.price_in_last_12_days));
+        lineChart.getDescription().setTextSize(12);
+        lineChart.setDrawMarkers(true);
+        lineChart.getXAxis().setPosition(XAxis.XAxisPosition.BOTH_SIDED);
+        lineChart.animateY(1000);
+        lineChart.getXAxis().setGranularityEnabled(true);
+        lineChart.getXAxis().setGranularity(1.0f);
+        lineChart.getXAxis().setLabelCount(lineDataSet.getEntryCount());
+        lineChart.setData(lineData);
 
     }
 
-    private void insert_data(){
+    private List<Entry> getDataSet() {
 
-        //sqLiteDatabase.execSQL("CREATE TABLE IF NOT EXISTS data_raw (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,id_user INTEGER,id_project INTEGER ,gyro_x VARCHAR,gyro_y VARCHAR,gyro_z VARCHAR,acc_x VARCHAR,acc_y VARCHAR,acc_z VARCHAR,hrv VARCHAR,createdate DATETIME);");
-        SQLiteQuery = "INSERT INTO data_raw (id_user,id_project,gyro_x,gyro_y,gyro_z,acc_x,acc_y,acc_z,hrv,createdate) VALUES ('" + Integer.parseInt(idUser) + "','" + Integer.parseInt(kodeProject) + "','" + gyro_x + "', '" + gyro_y + "','" + gyro_z + "','" + acc_x + "','" + acc_y + "','" + acc_z + "','',strftime('%Y-%m-%d %H:%M:%f', 'now', 'localtime'));";
-        sqLiteDatabase.execSQL(SQLiteQuery);
+        lineEntries.add(new Entry(0, 1));
+        lineEntries.add(new Entry(1, 2));
+        lineEntries.add(new Entry(2, 3));
+        lineEntries.add(new Entry(3, 4));
+        lineEntries.add(new Entry(4, 2));
+        lineEntries.add(new Entry(5, 3));
+        lineEntries.add(new Entry(6, 1));
+        lineEntries.add(new Entry(7, 5));
+        lineEntries.add(new Entry(8, 7));
+        lineEntries.add(new Entry(9, 6));
+        lineEntries.add(new Entry(10, 4));
+        lineEntries.add(new Entry(11, 5));
+        return lineEntries;
 
     }
+
 }

@@ -1,5 +1,6 @@
 package com.albastomi.arif.Utils;
 import android.app.Activity;
+import android.app.Service;
 import android.content.Context;
 import android.content.SharedPreferences;
 
@@ -15,10 +16,16 @@ public class SetSharedPreference {
     public static final String projectidKey = "projectidKey";
     public static final String syncIntervalKey = "syncIntervalKey";
     public static final String insertIntervalKey = "insertIntervalKey";
+    public static final String attemptKey = "attemptKey";
 
-    public SetSharedPreference(Context ctx) {
+    public SetSharedPreference(Context ctx,boolean  isActivity) {
         this.ctx = ctx;
-        mSettingVariabel = ((Activity)ctx).getSharedPreferences("SettingVariabel", Context.MODE_PRIVATE);
+        if(isActivity){
+            mSettingVariabel = ((Activity)ctx).getSharedPreferences("SettingVariabel", Context.MODE_PRIVATE);
+        }else{
+            mSettingVariabel = ((Service)ctx).getSharedPreferences("SettingVariabel", Context.MODE_PRIVATE);
+        }
+
     }
 
     public void setIsiStringSharedPreferences(String key, String isi){
@@ -80,6 +87,15 @@ public class SetSharedPreference {
 
     public String getInsertInterval(){
         return getStringSharedPreferences(insertIntervalKey);
+    }
+
+
+    public void setAttempt(String attempt){
+        setIsiStringSharedPreferences(attemptKey, attempt );
+    }
+
+    public String getAttempt(){
+        return getStringSharedPreferences(attemptKey);
     }
 
 

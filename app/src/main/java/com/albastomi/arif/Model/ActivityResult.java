@@ -1,12 +1,10 @@
 package com.albastomi.arif.Model;
 
-public class SensorResult {
+public class ActivityResult {
+
 
     private Integer status_code;
     private String message;
-    private Integer id;
-
-
 
     /**
      *
@@ -42,24 +40,6 @@ public class SensorResult {
      */
     public void setMessage(String message) {
         this.message = message;
-    }
-
-    /**
-     *
-     * @return
-     * The id_user
-     */
-    public Integer getId() {
-        return id;
-    }
-
-    /**
-     *
-     * @param id
-     * The error
-     */
-    public void setId(Integer id) {
-        this.id = id;
     }
 
 

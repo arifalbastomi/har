@@ -24,10 +24,10 @@ import retrofit2.Response;
 public class StartActivity extends AppCompatActivity {
 
     private EditText edtProject;
-    private TextView tvDateResult;
     UserService mApiInterface;
     private Button btnMulai;
     SetSharedPreference fSetSharedPreference;
+    String idUser;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,14 +35,15 @@ public class StartActivity extends AppCompatActivity {
 
         edtProject  = (EditText) findViewById(R.id.edt_project);
         btnMulai  = (Button) findViewById(R.id.btn_mulai);
-        fSetSharedPreference=new SetSharedPreference(this);
+        fSetSharedPreference=new SetSharedPreference(this,true);
+        idUser=fSetSharedPreference.getidUser();
 
         btnMulai.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
                 mApiInterface = ApiClient.getClient().create(UserService.class);
-                Call<ProjectResult> call=mApiInterface.getStringScalar(new ProjectData(edtProject.getText().toString(),"5e636b16-df7f-4a53-afbe-497e6fe07edc" ) );
+                Call<ProjectResult> call=mApiInterface.getStringScalar(new ProjectData(edtProject.getText().toString(),idUser,"5e636b16-df7f-4a53-afbe-497e6fe07edc" ) );
                 call.enqueue(new Callback<ProjectResult>() {
                     @Override
                     public void onResponse(Call<ProjectResult> call, Response<ProjectResult> response) {
@@ -52,6 +53,7 @@ public class StartActivity extends AppCompatActivity {
                             fSetSharedPreference.setProjectid(response.body().getId_project()+"");
                             fSetSharedPreference.setSyncInterval(response.body().getSync_interval()+"");
                             fSetSharedPreference.setInsertInterval(response.body().getInsert_interval()+"");
+                            fSetSharedPreference.setAttempt(response.body().getAttempt()+"");
                             Intent activitystartIntent = new Intent(getApplicationContext(), MainActivity.class);
                             startActivity(activitystartIntent);
 

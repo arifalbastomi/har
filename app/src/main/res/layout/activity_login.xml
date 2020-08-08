@@ -49,7 +49,7 @@
                     android:id="@+id/edt_password"
                     android:drawableLeft="@drawable/password_icon"
                     android:hint="Password"
-                    android:inputType="numberPassword" />
+                    android:inputType="textPassword" />
             </android.support.design.widget.TextInputLayout>
 
             <TextView

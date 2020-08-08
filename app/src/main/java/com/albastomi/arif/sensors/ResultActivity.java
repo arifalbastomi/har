@@ -5,51 +5,55 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
-import com.albastomi.arif.Model.LoginData;
-import com.albastomi.arif.Model.LoginResult;
-import com.albastomi.arif.Apihelper.ApiClient;
-import com.albastomi.arif.Apihelper.UserService;
-import com.albastomi.arif.Utils.SetSharedPreference;
-
 import android.widget.EditText;
-import retrofit2.Call;
-import retrofit2.Response;
-import retrofit2.Callback;
 import android.widget.Toast;
 
-public class LoginActivity extends AppCompatActivity {
+import com.albastomi.arif.Apihelper.ApiClient;
+import com.albastomi.arif.Apihelper.UserService;
+import com.albastomi.arif.Model.ActivityData;
+import com.albastomi.arif.Model.ActivityResult;
+import com.albastomi.arif.Model.LoginData;
+import com.albastomi.arif.Model.LoginResult;
+import com.albastomi.arif.Utils.SetSharedPreference;
 
-    Button btnLogin;
-    EditText email,password;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
+public class ResultActivity extends AppCompatActivity {
+
+    EditText edt_activity;
+    Button btn_save;
     UserService mApiInterface;
     SetSharedPreference fSetSharedPreference;
+    String kodeProject,idUser,attempt;
 
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
+        setContentView(R.layout.activity_result);
 
-        email  = (EditText) findViewById(R.id.edt_username);
-        password  = (EditText) findViewById(R.id.edt_password);
-        btnLogin  = (Button) findViewById(R.id.btn_login);
+        edt_activity=(EditText)findViewById(R.id.edt_activity);
+        btn_save=(Button)findViewById(R.id.btn_save);
 
         fSetSharedPreference=new SetSharedPreference(this,true);
+        kodeProject=fSetSharedPreference.getProjectId();
+        idUser=fSetSharedPreference.getidUser();
+        attempt=fSetSharedPreference.getAttempt();
 
-        btnLogin.setOnClickListener(new View.OnClickListener() {
+        btn_save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+
                 mApiInterface = ApiClient.getClient().create(UserService.class);
-                Call<LoginResult> call=mApiInterface.getStringScalar(new LoginData(email.getText().toString(),password.getText().toString(),"5e636b16-df7f-4a53-afbe-497e6fe07edc" ) );
-                call.enqueue(new Callback<LoginResult>() {
+                Call<ActivityResult> call=mApiInterface.getStringScalar(new ActivityData(Integer.parseInt(kodeProject),Integer.parseInt(idUser),edt_activity.getText().toString(),Integer.parseInt(attempt),"5e636b16-df7f-4a53-afbe-497e6fe07edc" ) );
+                call.enqueue(new Callback<ActivityResult>() {
                     @Override
-                    public void onResponse(Call<LoginResult> call, Response<LoginResult> response) {
+                    public void onResponse(Call<ActivityResult> call, Response<ActivityResult> response) {
                         //response.body() have your LoginResult fields and methods  (example you have to access error then try like this response.body().getError() )
                         if(response.body().getStatus_code()==200){
 
-                            //Toast.makeText(getBaseContext(),response.body().getEmail(),Toast.LENGTH_SHORT).show();
-                            fSetSharedPreference.setemailLogin(response.body().getEmail());
-                            fSetSharedPreference.setnamaLogin(response.body().getNama());
-                            fSetSharedPreference.setidUser(response.body().getId_user()+"");
                             Intent activitystartIntent = new Intent(getApplicationContext(), HomeActivity.class);
                             startActivity(activitystartIntent);
 
@@ -65,7 +69,7 @@ public class LoginActivity extends AppCompatActivity {
                     }
 
                     @Override
-                    public void onFailure(Call<LoginResult> call, Throwable t) {
+                    public void onFailure(Call<ActivityResult> call, Throwable t) {
                         //for getting error in network put here Toast, so get the error on network
 
                         Toast.makeText(getBaseContext(),"error network",Toast.LENGTH_SHORT).show();
@@ -74,6 +78,7 @@ public class LoginActivity extends AppCompatActivity {
 
             }
         });
+
 
     }
 }
