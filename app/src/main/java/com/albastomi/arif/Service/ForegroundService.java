@@ -35,7 +35,7 @@ public class ForegroundService extends Service implements SensorEventListener  {
     Sensor accelerometer,gyroscope,hr;
     SensorManager sm;
     String gyro_x="",gyro_y="",gyro_z="",acc_x="",acc_y="",acc_z="",hrv="";
-    String SQLiteQuery,syncInterval,insertInterval,kodeProject,email,idUser,nama,attempt;
+    String SQLiteQuery,syncInterval,insertInterval,kodeProject,email,idUser,nama,attempt,activity,signal;
     SQLiteDatabase sqLiteDatabase;
     SetSharedPreference fSetSharedPreference;
     Handler vHandler;
@@ -75,7 +75,7 @@ public class ForegroundService extends Service implements SensorEventListener  {
             vHandler=new Handler();
         }
         stopTimerBroadcast();
-        vHandler.postDelayed(vBroadcast,10000);
+        vHandler.postDelayed(vBroadcast,1000);
     }
 
     private void setTimerSync(){
@@ -83,7 +83,7 @@ public class ForegroundService extends Service implements SensorEventListener  {
             vHandler=new Handler();
         }
         stopTimerSync();
-        vHandler.postDelayed(vSync,60000);
+        vHandler.postDelayed(vSync,Integer.parseInt(syncInterval));
     }
 
     private void setTimer(){
@@ -91,7 +91,7 @@ public class ForegroundService extends Service implements SensorEventListener  {
             vHandler=new Handler();
         }
         stopTimer();
-        vHandler.postDelayed(vRunable,Integer.parseInt(insertInterval));
+        vHandler.postDelayed(vRunable,Integer.parseInt(signal)/1000);
     }
 
 
@@ -137,15 +137,17 @@ public class ForegroundService extends Service implements SensorEventListener  {
         idUser=fSetSharedPreference.getidUser();
         nama=fSetSharedPreference.getnamaLogin();
         attempt=fSetSharedPreference.getAttempt();
+        activity=fSetSharedPreference.getActivity();
+        signal=fSetSharedPreference.getSignal();
 
         sqLiteDatabase = openOrCreateDatabase("HAR", Context.MODE_PRIVATE, null);
 
         sm = (SensorManager) getSystemService(SENSOR_SERVICE);
 
         accelerometer= sm.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-
+        //SensorManager.SENSOR_DELAY_NORMAL
         if(accelerometer != null){
-            sm.registerListener(this,accelerometer,SensorManager.SENSOR_DELAY_NORMAL);
+            sm.registerListener(this,accelerometer,Integer.parseInt(signal));
 
         }else{
             //acceleration.setText("device tidak support accelerometer");
@@ -154,7 +156,7 @@ public class ForegroundService extends Service implements SensorEventListener  {
         gyroscope= sm.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
 
         if(gyroscope != null){
-            sm.registerListener(this,gyroscope,SensorManager.SENSOR_DELAY_NORMAL);
+            sm.registerListener(this,gyroscope,Integer.parseInt(signal));
 
         }else{
             //.setText("device tidak support gyroscope");
@@ -163,7 +165,7 @@ public class ForegroundService extends Service implements SensorEventListener  {
         hr= sm.getDefaultSensor(Sensor.TYPE_HEART_RATE);
         //hrtext=(TextView) findViewById(R.id.hr);
         if(hr != null){
-            sm.registerListener(this,hr,SensorManager.SENSOR_DELAY_NORMAL);
+            sm.registerListener(this,hr,Integer.parseInt(signal));
 
         }else{
            // hrtext.setText("device tidak support heart rate");
@@ -171,7 +173,7 @@ public class ForegroundService extends Service implements SensorEventListener  {
 
         if(accelerometer != null || gyroscope != null || hr != null){
             setTimer();
-            setTimerSync();
+            //setTimerSync();
             setTimerBroadcast();
 
         }
@@ -179,19 +181,27 @@ public class ForegroundService extends Service implements SensorEventListener  {
     }
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        if((intent.getStringExtra("aksi") == null ? "" : intent.getStringExtra("aksi") ).equals("stopservice")){
+            stopForeground(true);
+            stopTimer();
+            stopTimerSync();
+            stopTimerBroadcast();
+            stopSelf();
 
-        String input = intent.getStringExtra("inputExtra");
-        createNotificationChannel();
-        Intent notificationIntent = new Intent(this, MainActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this,
-                0, notificationIntent, 0);
-        Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
-                .setContentTitle("Foreground Service for HAR")
-                .setContentText(input)
-                .setSmallIcon(R.drawable.user_icon)
-                .setContentIntent(pendingIntent)
-                .build();
-        startForeground(1, notification);
+        }else {
+            String input = intent.getStringExtra("inputExtra");
+            createNotificationChannel();
+            Intent notificationIntent = new Intent(this, MainActivity.class);
+            PendingIntent pendingIntent = PendingIntent.getActivity(this,
+                    0, notificationIntent, 0);
+            Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
+                    .setContentTitle("Foreground Service for HAR")
+                    .setContentText(input)
+                    .setSmallIcon(R.drawable.user_icon)
+                    .setContentIntent(pendingIntent)
+                    .build();
+            startForeground(1, notification);
+        }
         //do heavy work on a background thread
         //stopSelf();
         return START_NOT_STICKY;
@@ -199,6 +209,7 @@ public class ForegroundService extends Service implements SensorEventListener  {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        //stopService();
     }
     @Nullable
     @Override
@@ -237,8 +248,9 @@ public class ForegroundService extends Service implements SensorEventListener  {
 
         }
 
-        //if(event.sensor == accelerometer || event.sensor == gyroscope || event.sensor == hr){
+        //insert_data();
 
+        //if(event.sensor == accelerometer || event.sensor == gyroscope || event.sensor == hr){
         //}
 
     }
@@ -263,9 +275,12 @@ public class ForegroundService extends Service implements SensorEventListener  {
 
     private void insert_data(){
 
-        //sqLiteDatabase.execSQL("CREATE TABLE IF NOT EXISTS data_raw (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,id_user INTEGER,id_project INTEGER ,gyro_x VARCHAR,gyro_y VARCHAR,gyro_z VARCHAR,acc_x VARCHAR,acc_y VARCHAR,acc_z VARCHAR,hrv VARCHAR,createdate DATETIME);");
-        SQLiteQuery = "INSERT INTO data_raw (id_user,id_project,gyro_x,gyro_y,gyro_z,acc_x,acc_y,acc_z,hrv,createdate) VALUES ('" + Integer.parseInt(idUser) + "','" + Integer.parseInt(kodeProject) + "','" + gyro_x + "', '" + gyro_y + "','" + gyro_z + "','" + acc_x + "','" + acc_y + "','" + acc_z + "','',strftime('%Y-%m-%d %H:%M:%f', 'now', 'localtime'));";
-        sqLiteDatabase.execSQL(SQLiteQuery);
+        if(!gyro_x.equals("0") || !gyro_y.equals("0") || !gyro_z.equals("0") || !gyro_x.equals("") || !gyro_y.equals("") || !gyro_z.equals("")){
+            //sqLiteDatabase.execSQL("CREATE TABLE IF NOT EXISTS data_raw (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,id_user INTEGER,id_project INTEGER ,gyro_x VARCHAR,gyro_y VARCHAR,gyro_z VARCHAR,acc_x VARCHAR,acc_y VARCHAR,acc_z VARCHAR,hrv VARCHAR,createdate DATETIME);");
+            Log.e("FOREGROUND ","insert");
+            SQLiteQuery = "INSERT INTO data_raw (id_user,id_project,gyro_x,gyro_y,gyro_z,acc_x,acc_y,acc_z,hrv,createdate) VALUES ('" + Integer.parseInt(idUser) + "','" + Integer.parseInt(kodeProject) + "','" + gyro_x + "', '" + gyro_y + "','" + gyro_z + "','" + acc_x + "','" + acc_y + "','" + acc_z + "','',strftime('%Y-%m-%d %H:%M:%f', 'now', 'localtime'));";
+            sqLiteDatabase.execSQL(SQLiteQuery);
+        }
 
     }
 
@@ -292,7 +307,7 @@ public class ForegroundService extends Service implements SensorEventListener  {
 
             mApiInterface = ApiClient.getClient().create(UserService.class);
             //public SensorData(String id,String id_user,String id_project,String gyro_x,String gyro_y,String gyro_z,String acc_x,String acc_y,String acc_z,String hrv,String createdate,String authorization) {
-            Call<SensorResult> call=mApiInterface.getStringScalar(new SensorData(id,iduser,id_project,gyro_x_i,gyro_y_i,gyro_x_i,acc_x_i,acc_y_i,acc_z_i,hrv_i,createdate,attempt,"5e636b16-df7f-4a53-afbe-497e6fe07edc" ) );
+            Call<SensorResult> call=mApiInterface.getStringScalar(new SensorData(id,iduser,id_project,gyro_x_i,gyro_y_i,gyro_z_i,acc_x_i,acc_y_i,acc_z_i,hrv_i,createdate,attempt,activity,"5e636b16-df7f-4a53-afbe-497e6fe07edc" ) );
             call.enqueue(new Callback<SensorResult>() {
                 @Override
                 public void onResponse(Call<SensorResult> call, Response<SensorResult> response) {

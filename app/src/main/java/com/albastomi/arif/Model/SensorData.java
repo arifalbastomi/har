@@ -15,8 +15,9 @@ public class SensorData {
     private String hrv;
     private String attempt;
     private String createdate;
+    private String activity;
 
-    public SensorData(String id,String id_user,String id_project,String gyro_x,String gyro_y,String gyro_z,String acc_x,String acc_y,String acc_z,String hrv,String createdate,String attempt,String authorization) {
+    public SensorData(String id,String id_user,String id_project,String gyro_x,String gyro_y,String gyro_z,String acc_x,String acc_y,String acc_z,String hrv,String createdate,String attempt,String activity,String authorization) {
         this.id = id;
         this.authorization = authorization;
         this.id_user = id_user;
@@ -29,6 +30,8 @@ public class SensorData {
         this.acc_z = acc_z;
         this.attempt = attempt;
         this.createdate = createdate;
+        this.activity = activity;
+
     }
 
     /**
@@ -273,5 +276,23 @@ public class SensorData {
      */
     public void setAttempt(String attempt) {
         this.createdate = attempt;
+    }
+
+    /**
+     *
+     * @return
+     * The activity
+     */
+    public String getActivity() {
+        return activity;
+    }
+
+    /**
+     *
+     * @param activity
+     * The createdate
+     */
+    public void setActivity(String activity) {
+        this.activity = activity;
     }
 }

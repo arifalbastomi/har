@@ -56,6 +56,7 @@ public class ResultActivity extends AppCompatActivity {
 
                             Intent activitystartIntent = new Intent(getApplicationContext(), HomeActivity.class);
                             startActivity(activitystartIntent);
+                            finish();
 
                         }else {
                             //response.body() have your LoginResult fields and methods  (example you have to access error then try like this response.body().getError() )

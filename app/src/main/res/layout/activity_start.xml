@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#4A9586"
+    android:background="#FFFFFF"
     android:orientation="vertical"
     android:scrollbarAlwaysDrawVerticalTrack="true">
 
@@ -13,7 +13,7 @@
         android:layout_marginLeft="30dp"
         android:layout_marginRight="30dp"
         android:layout_marginTop="70dp"
-        android:background="#fff"
+        android:background="@drawable/layout_bg"
         android:elevation="4dp"
         android:orientation="vertical"
         android:padding="20dp"
@@ -44,12 +44,70 @@
             android:inputType="textPersonName"
             android:hint="Kode Project" />
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Aktifitas yang akan dilakukan:"
+                android:id="@+id/aktifitas"
+                />
+
+            <EditText
+                android:id="@+id/edt_activity"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="10dp"
+                android:layout_marginTop="10dp"
+                android:ems="10"
+                android:inputType="textPersonName"
+                android:hint="Aktivitas" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Signal:"
+                android:id="@+id/signal"
+                />
+
+            <EditText
+                android:id="@+id/edt_signal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="10dp"
+                android:layout_marginTop="10dp"
+                android:ems="10"
+                android:inputType="textPersonName"
+                android:hint="Signal : 20000 = 50hz" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Durasi:"
+                android:id="@+id/durasi"
+                />
+
+            <EditText
+                android:id="@+id/edt_durasi"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="10dp"
+                android:layout_marginTop="10dp"
+                android:ems="10"
+                android:inputType="textPersonName"
+                android:hint="Durasi : 15000 = 15s" />
+
+
 
             <Button
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="22dp"
-                android:background="#d67601"
+                android:background="@drawable/gradient"
                 android:text="Start"
                 android:id="@+id/btn_mulai"
                 android:textAllCaps="false"

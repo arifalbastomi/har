@@ -1,32 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity">
-        <com.github.mikephil.charting.charts.LineChart
+
+          <com.github.mikephil.charting.charts.LineChart
             android:layout_above="@id/layout1"
             android:id="@+id/lineChart"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
-    <RelativeLayout
+
+    <LinearLayout
         android:id="@+id/layout1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:orientation="horizontal"
         android:layout_alignParentBottom="true">
 
         <Button
-            android:layout_width="fill_parent"
+            android:layout_width="0dp"
+            android:layout_weight="1"
             android:layout_height="wrap_content"
             android:layout_margin="22dp"
-            android:background="#d67601"
-            android:text="Stop"
+            android:background="@drawable/gradient"
+            android:text="Sync"
+            android:id="@+id/btn_sync"
+            android:textAllCaps="false"
+            android:textColor="#fff"
+            android:layout_centerHorizontal="true"
+            android:textSize="18sp" />
+
+        <Button
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:layout_margin="22dp"
+            android:background="@drawable/gradient"
+            android:text="Finish"
             android:id="@+id/btn_stop"
             android:textAllCaps="false"
             android:textColor="#fff"
             android:layout_centerHorizontal="true"
             android:textSize="18sp" />
-    </RelativeLayout>
+
+    </LinearLayout>
+
 
 </RelativeLayout>

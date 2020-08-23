@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Human Activity Recognition</string>
+    <string name="app_name">aHar</string>
     <string name="gyro_x">gyro x</string>
     <string name="gyro_y">gyro y</string>
     <string name="gyro_z">gyro z</string>

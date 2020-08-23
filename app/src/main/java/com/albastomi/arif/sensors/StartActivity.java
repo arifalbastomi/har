@@ -23,7 +23,7 @@ import retrofit2.Response;
 
 public class StartActivity extends AppCompatActivity {
 
-    private EditText edtProject;
+    private EditText edtProject,edtActivity,edtSignal,edtDurasi;
     UserService mApiInterface;
     private Button btnMulai;
     SetSharedPreference fSetSharedPreference;
@@ -34,6 +34,9 @@ public class StartActivity extends AppCompatActivity {
         setContentView(R.layout.activity_start);
 
         edtProject  = (EditText) findViewById(R.id.edt_project);
+        edtSignal  = (EditText) findViewById(R.id.edt_signal);
+        edtDurasi  = (EditText) findViewById(R.id.edt_durasi);
+        edtActivity  = (EditText) findViewById(R.id.edt_activity);
         btnMulai  = (Button) findViewById(R.id.btn_mulai);
         fSetSharedPreference=new SetSharedPreference(this,true);
         idUser=fSetSharedPreference.getidUser();
@@ -51,18 +54,22 @@ public class StartActivity extends AppCompatActivity {
                         if(response.body().getStatus_code()==200){
 
                             fSetSharedPreference.setProjectid(response.body().getId_project()+"");
+                            fSetSharedPreference.setActivity(edtActivity.getText().toString());
+                            fSetSharedPreference.setSignal(edtSignal.getText().toString()+"");
+                            fSetSharedPreference.setDuration(edtDurasi.getText().toString()+"");
                             fSetSharedPreference.setSyncInterval(response.body().getSync_interval()+"");
                             fSetSharedPreference.setInsertInterval(response.body().getInsert_interval()+"");
                             fSetSharedPreference.setAttempt(response.body().getAttempt()+"");
+                            fSetSharedPreference.setAktif("1");
                             Intent activitystartIntent = new Intent(getApplicationContext(), MainActivity.class);
                             startActivity(activitystartIntent);
+                            finish();
 
                         }else {
                             //response.body() have your LoginResult fields and methods  (example you have to access error then try like this response.body().getError() )
                            /* String msg = response.body().getMessage();
                             int docId = response.body().getDoctorid();
                             boolean error = response.body().getError();
-
                             boolean activie = response.body().getActive()();*/
                             Toast.makeText(getBaseContext(),response.body().getMessage(),Toast.LENGTH_SHORT).show();
                         }

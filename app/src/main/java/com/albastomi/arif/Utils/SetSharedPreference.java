@@ -17,6 +17,11 @@ public class SetSharedPreference {
     public static final String syncIntervalKey = "syncIntervalKey";
     public static final String insertIntervalKey = "insertIntervalKey";
     public static final String attemptKey = "attemptKey";
+    public static final String loginKey = "loginKey";
+    public static final String aktifKey = "aktifKey";
+    public static final String activityKey = "activityKey";
+    public static final String signalKey = "signalKey";
+    public static final String durationKey = "durationKey";
 
     public SetSharedPreference(Context ctx,boolean  isActivity) {
         this.ctx = ctx;
@@ -96,6 +101,48 @@ public class SetSharedPreference {
 
     public String getAttempt(){
         return getStringSharedPreferences(attemptKey);
+    }
+
+
+    public void setLogin(String login){
+        setIsiStringSharedPreferences(loginKey, login );
+    }
+
+    public String getLogin(){
+        return getStringSharedPreferences(loginKey);
+    }
+
+    public void setAktif(String aktif){
+        setIsiStringSharedPreferences(aktifKey, aktif );
+    }
+
+    public String getAktif(){
+        return getStringSharedPreferences(aktifKey);
+    }
+
+
+    public void setActivity(String activity){
+        setIsiStringSharedPreferences(activityKey, activity );
+    }
+
+    public String getActivity(){
+        return getStringSharedPreferences(activityKey);
+    }
+
+    public void setSignal(String signal){
+        setIsiStringSharedPreferences(signalKey, signal );
+    }
+
+    public String getSignal(){
+        return getStringSharedPreferences(signalKey);
+    }
+
+    public void setDuration(String duration){
+        setIsiStringSharedPreferences(durationKey, duration );
+    }
+
+    public String getDuration(){
+        return getStringSharedPreferences(durationKey);
     }
 
 
